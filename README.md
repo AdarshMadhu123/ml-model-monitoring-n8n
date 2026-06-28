@@ -63,6 +63,15 @@ In real production systems, ML models silently degrade over time as real-world d
 - Third-party API integration (Google Sheets, Gmail) via OAuth2
 - Practical debugging (port conflicts, OAuth scopes, data flow issues)
 
+## 🐛 Challenges & Debugging
+
+Building this surfaced a few real-world debugging scenarios, not just "follow the tutorial" issues:
+
+- **Port conflicts**: Restarting the Flask server while testing sometimes left an old process still running in the background, silently serving stale responses on the same port. Diagnosed using `netstat -ano | findstr :5000` to spot duplicate `LISTENING` processes, then resolved with `taskkill`.
+- **OAuth setup for self-hosted automation**: Connecting Google Sheets and Gmail to a self-hosted n8n instance required manually creating a Google Cloud project, enabling the Sheets/Drive/Gmail APIs, configuring an OAuth consent screen, and registering a redirect URI — a good hands-on introduction to OAuth2 flows.
+- **Silent data loss between nodes**: The "Edit Fields" (Set) node was dropping upstream fields (`accuracy`, `drift_detected`) by default. Fixed by enabling "Include Other Input Fields" so data correctly flows through the whole pipeline.
+- **Invisible trailing whitespace**: An expression like `{{$json.Accuracy}}` returned `undefined` even though the field clearly appeared as "Accuracy" in the UI. Using `{{JSON.stringify($json)}}` to dump the raw object revealed the real key was `"Accuracy "` (with a trailing space) — fixed using bracket notation: `{{$json["Accuracy "]}}`.
+
 ## 📌 Future improvements
 
 - Replace simulated "new data" with a real streaming data source
