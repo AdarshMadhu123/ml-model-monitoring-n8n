@@ -1,0 +1,361 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "cb808f75-607b-43ba-9b66-7324fb8c1e86",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9f6d0645-a29a-4d63-9692-4c3321fe30ed",
+              "name": "message",
+              "value": "Hello n8n",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "12ef15df-d398-4e83-9232-2fa765f2a59f",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "url": "http://127.0.0.1:5000/check-drift",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        416,
+        0
+      ],
+      "id": "c0cc36eb-ecb7-4b10-9d6b-4593691a8fd5",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "841c5b5d-f239-4f9e-b974-a7d8e9c9937c",
+              "leftValue": "={{ $json.drift_detected }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        624,
+        0
+      ],
+      "id": "3b4f3f87-90b9-49c7-bc77-7950eb07a5cc",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 5
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        464,
+        208
+      ],
+      "id": "6f1f753f-4029-4316-a7f7-bdbdf0f945e7",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1gERlwXswnazmevmWKfy_3KGLWS6Ytce5lVCBWsiO8S8",
+          "mode": "list",
+          "cachedResultName": "Model Monitoring Log",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gERlwXswnazmevmWKfy_3KGLWS6Ytce5lVCBWsiO8S8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gERlwXswnazmevmWKfy_3KGLWS6Ytce5lVCBWsiO8S8/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp ": "={{$now}}",
+            "Accuracy ": "={{$json.accuracy}}",
+            "Drift Detected": "={{$json.drift_detected}}",
+            "Action": "={{$json.action}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Timestamp ",
+              "displayName": "Timestamp ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Accuracy ",
+              "displayName": "Accuracy ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Drift Detected",
+              "displayName": "Drift Detected",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Action",
+              "displayName": "Action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1040,
+        96
+      ],
+      "id": "ba64243f-4a3e-40be-a411-64f2d8868cd5",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "rfEOQKmNEEuCUWrt",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "adarshmadhu645@gmail.com",
+        "subject": "⚠️ Model Drift Detected - Action Required",
+        "emailType": "text",
+        "message": "=Drift detected in production model!  Accuracy: {{$json.accuracy}} Status: {{$json.message}}  Please review and retrain if necessary.",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1088,
+        -80
+      ],
+      "id": "c86c1378-cb33-46dc-97df-59d0ac640d9d",
+      "name": "Send a message",
+      "webhookId": "8a1ac075-913b-442a-99a9-b7556301bc72",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "mEglC1spoLEVOm9o",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4f3e8d27-fcae-4984-a4a1-2b05eee11e08",
+              "name": "action",
+              "value": "Retraining triggered",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        832,
+        -80
+      ],
+      "id": "705e33a4-4c77-433b-beb4-0cd349124811",
+      "name": "Drift Alert Data"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "41251629-14b5-4ff5-8328-eabd15a2334f",
+              "name": "action",
+              "value": "no action needed",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        832,
+        96
+      ],
+      "id": "31eea692-bc5f-41d3-8c66-fae9f2b2958d",
+      "name": "Healthy Status Data"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Drift Alert Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Healthy Status Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Drift Alert Data": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Healthy Status Data": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "67f43f04-6b96-4a33-a02e-441349f62a50",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0ec1dc299fcc5e89cd466af3e3a7218b20865fa485c31bc65754cb549b396176"
+  },
+  "nodeGroups": [],
+  "id": "ni2A2YrV1FqA6IHe",
+  "tags": []
+}
