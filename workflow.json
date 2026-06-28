@@ -173,8 +173,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        1040,
-        96
+        1008,
+        240
       ],
       "id": "ba64243f-4a3e-40be-a411-64f2d8868cd5",
       "name": "Append row in sheet",
@@ -196,8 +196,8 @@
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.2,
       "position": [
-        1088,
-        -80
+        1216,
+        -112
       ],
       "id": "c86c1378-cb33-46dc-97df-59d0ac640d9d",
       "name": "Send a message",
@@ -221,6 +221,7 @@
             }
           ]
         },
+        "includeOtherFields": true,
         "options": {}
       },
       "type": "n8n-nodes-base.set",
@@ -255,6 +256,90 @@
       ],
       "id": "31eea692-bc5f-41d3-8c66-fae9f2b2958d",
       "name": "Healthy Status Data"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1gERlwXswnazmevmWKfy_3KGLWS6Ytce5lVCBWsiO8S8",
+          "mode": "list",
+          "cachedResultName": "Model Monitoring Log",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gERlwXswnazmevmWKfy_3KGLWS6Ytce5lVCBWsiO8S8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gERlwXswnazmevmWKfy_3KGLWS6Ytce5lVCBWsiO8S8/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp ": "={{$now}}",
+            "Accuracy ": "={{$json.accuracy}}",
+            "Drift Detected": "={{$json.drift_detected}}",
+            "Action": "={{$json.action}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Timestamp ",
+              "displayName": "Timestamp ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Accuracy ",
+              "displayName": "Accuracy ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Drift Detected",
+              "displayName": "Drift Detected",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Action",
+              "displayName": "Action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1040,
+        -80
+      ],
+      "id": "625b73d4-89e5-423e-b667-24218eff96ed",
+      "name": "Append row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "rfEOQKmNEEuCUWrt",
+          "name": "Google Sheets account"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -325,7 +410,7 @@
       "main": [
         [
           {
-            "node": "Send a message",
+            "node": "Append row in sheet1",
             "type": "main",
             "index": 0
           }
@@ -342,6 +427,17 @@
           }
         ]
       ]
+    },
+    "Append row in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -350,7 +446,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "67f43f04-6b96-4a33-a02e-441349f62a50",
+  "versionId": "c750b1f6-de2a-426c-b68c-f4de37910011",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "0ec1dc299fcc5e89cd466af3e3a7218b20865fa485c31bc65754cb549b396176"
